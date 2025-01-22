@@ -37,6 +37,12 @@ class Bot(ABC):
                 if 0 <= map_x < len(self.map) and 0 <= map_y < len(self.map[0]):
                     self.map[map_x][map_y] = self.minimap[i][j]
 
+    def update_state(self, current_x: int, current_y: int, minimap: list):
+        self.x = current_x
+        self.y = current_y
+        self.minimap = minimap
+        self.update_map_from_minimap()
+
     @abstractmethod
     def move(self, current_x: int, current_y: int, minimap: list) -> int:
         """

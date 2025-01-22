@@ -3,6 +3,7 @@ import importlib
 import random
 from constants import *
 from bots.bot import Bot
+from typing import Dict
 
 # Get the 5x5 minimap of the player
 # (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
@@ -56,6 +57,25 @@ def generate_bot_positions(map: list, num_of_bots: int) -> dict:
     
     return bot_positions
 
+# Execute bot code to find the next move
+# (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
+def calculate_bot_directions(map: list, bots: Dict[int, Bot], bot_positions: dict, bot_ids: dict) -> dict:
+    """
+    Calculate the next move for each bot
+    :param map: 2D list representing the game map
+    :param bots: Dictionary containing bot objects
+    :param bot_positions: Dictionary containing bot positions
+    :param bot_ids: Dictionary containing bot ids
+    """
+    bot_directions = {}
+    for id, bot in bots.items():
+        if bot_ids[id] == BOT_ALIVE:
+            bot_directions[id] = bot.move(
+                current_x=bot_positions[id][0],
+                current_y=bot_positions[id][1],
+                minimap=get_minimap(map, bot_positions[id][0], bot_positions[id][1]))
+    return bot_directions
+
 # Calculate final bot positions based on the directions bots are moving
 # (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
 def calculate_final_bot_positions(map: list, bot_ids: dict, bot_current_positions: dict, bot_directions: dict):
@@ -89,9 +109,6 @@ def bot_fights(bot_ids: dict, bot_current_positions: dict, bot_final_positions: 
     :param bot_final_positions: Dictionary containing the final positions of the bots
     :param bot_food: Dictionary containing the food count of the bots
     """
-    print(bot_current_positions)
-    print(bot_final_positions)
-
     final_pos_map = dict()
     current_pos_map = dict()
     for id in bot_ids.keys():

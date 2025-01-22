@@ -2,12 +2,21 @@ import pygame
 from constants import *
 from map_generator import generate_map
 from food_generator import generate_food
-from bot_operations import get_number_of_bots, generate_bot_positions, load_bots, move_bots, get_minimap
+from bot_operations import *
 
 # Initialize the game using pygame UI
 pygame.init()
-screen = pygame.display.set_mode((HEIGHT, WIDTH))
+screen = pygame.display.set_mode((WIDTH + 200, HEIGHT + 100))
 pygame.display.set_caption("PACMAN WARS")
+
+def draw_title(screen: pygame.Surface):
+    """
+    Draw the title on the screen
+    :param screen: UI screen
+    """
+    font = pygame.font.SysFont('Arial', 45, bold=True)  # Use Arial font with size 30 and bold
+    text = font.render("PACMAN WARS", True, WHITE)
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2, 20))
 
 # Draw the game snapshot on the screen
 # (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
@@ -26,32 +35,40 @@ def draw_grid_map(screen: pygame.Surface, map: list):
                 color = COLOR_MAP[PLAYER_CELL]
             
             # Draw the cell with desired color
-            pygame.draw.rect(screen, color, (j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-            pygame.draw.rect(screen, BLACK, (j * CELL_SIZE, i * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
+            pygame.draw.rect(screen, color, (j * CELL_SIZE, i * CELL_SIZE + 100, CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(screen, BLACK, (j * CELL_SIZE, i * CELL_SIZE + 100, CELL_SIZE, CELL_SIZE), 1)
 
             # If its a player cell, draw the player number
             if cell not in COLOR_MAP.keys():
                 text = font.render(cell, True, BLACK)
-                screen.blit(text, (j * CELL_SIZE + CELL_SIZE // 3, i * CELL_SIZE + CELL_SIZE // 4))
+                screen.blit(text, (j * CELL_SIZE + CELL_SIZE // 3, i * CELL_SIZE + 100 + CELL_SIZE // 4))
 
-# Execute bot code to find the next move
-# (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
-def calculate_bot_directions(map: list, bots: dict, bot_positions: dict, bot_ids: dict) -> dict:
+def draw_scoreboard(screen: pygame.Surface, bot_food: dict, bot_names: dict):
     """
-    Calculate the next move for each bot
-    :param map: 2D list representing the game map
-    :param bots: Dictionary containing bot objects
-    :param bot_positions: Dictionary containing bot positions
-    :param bot_ids: Dictionary containing bot ids
+    Draw the scoreboard on the screen
+    :param screen: UI screen
+    :param bot_food: Dictionary containing the food count of the bots
+    :param bot_names: Dictionary containing the names of the bots
     """
-    bot_directions = {}
-    for id, bot in bots.items():
-        if bot_ids[id] == BOT_ALIVE:
-            bot_directions[id] = bot.move(
-                current_x=bot_positions[id][0],
-                current_y=bot_positions[id][1],
-                minimap=get_minimap(map, bot_positions[id][0], bot_positions[id][1]))
-    return bot_directions
+    font = pygame.font.SysFont('Arial', 20, bold=False)  # Use Arial font with size 20 and not bold
+    sorted_bots = sorted(bot_food.items(), key=lambda item: item[1], reverse=True)
+    
+    x_offset = WIDTH + 20
+    y_offset = 20
+    scoreboard_width = 180
+    scoreboard_height = 40 + len(sorted_bots) * 30
+
+    # Draw the box around the scoreboard
+    pygame.draw.rect(screen, WHITE, (x_offset - 10, y_offset - 10, scoreboard_width, scoreboard_height), 2)
+
+    screen.blit(font.render("Scoreboard", True, WHITE), (x_offset, y_offset))
+    y_offset += 30
+    
+    for bot_id, food in sorted_bots:
+        bot_name = bot_names[bot_id]
+        text = f"{bot_name}: {food}"
+        screen.blit(font.render(text, True, WHITE), (x_offset, y_offset))
+        y_offset += 30
 
 def main():
     clock = pygame.time.Clock()
@@ -71,8 +88,11 @@ def main():
         bot_directions = calculate_bot_directions(map, bots, bot_positions, bot_ids)
         move_bots(map, bot_ids, bot_positions, bot_directions, bot_food)
 
+        screen.fill(BLACK)
+        draw_title(screen)
         draw_grid_map(screen, map)
-        generate_food(map, 5)
+        draw_scoreboard(screen, bot_food, bot_names)
+        generate_food(map, number_of_bots)
         pygame.display.flip()
         clock.tick(1)
 
