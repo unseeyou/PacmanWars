@@ -3,11 +3,14 @@ from constants import *
 from map_generator import generate_map
 from food_generator import generate_food
 from bot_operations import *
+from speed_buttons import get_buttons
 
 # Initialize the game using pygame UI
 pygame.init()
 screen = pygame.display.set_mode((WIDTH + 200, HEIGHT + 100))
 pygame.display.set_caption("PACMAN WARS")
+
+game_tick = 1
 
 def draw_title(screen: pygame.Surface):
     """
@@ -17,6 +20,13 @@ def draw_title(screen: pygame.Surface):
     font = pygame.font.SysFont('Arial', 45, bold=True)  # Use Arial font with size 30 and bold
     text = font.render("PACMAN WARS", True, WHITE)
     screen.blit(text, (WIDTH // 2 - text.get_width() // 2, 20))
+
+def draw_speed_buttons(screen, speed_buttons):
+    font = pygame.font.SysFont('Arial', 20, bold=False) 
+    text = font.render(f"Change game speed", True, WHITE)
+    screen.blit(text, (WIDTH + 10, HEIGHT - 80))
+    for button in speed_buttons:
+        button.draw(screen, font)
 
 def draw_game_over(screen: pygame.Surface, winner_bot_name: str):
     """
@@ -94,12 +104,14 @@ def draw_scoreboard(screen: pygame.Surface, bot_food: dict, bot_names: dict):
 
 def main():
     clock = pygame.time.Clock()
+    global game_tick
     map = generate_map(0.6, 0.6, 200)   # Generate the game map
     number_of_bots = get_number_of_bots()   # Get the number of bots
     bot_positions = generate_bot_positions(map, number_of_bots)  # Generate the bot positions
     bots, bot_names = load_bots(bot_positions, map) # Generate bot objects with names
     bot_food = {id: 1 for id in bot_positions.keys()}  # Initialize the food count for each bot
     bot_ids = {id: BOT_ALIVE for id in range(1, number_of_bots + 1)} # Initialize the bot ids with BOT_ALIVE status
+    speed_buttons = get_buttons()
 
     is_game_running = True  # Game loop
     game_counter = 1000 # Maximum game moves
@@ -107,13 +119,19 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_game_running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for button in speed_buttons:
+                    if button.is_clicked(event.pos):
+                        game_tick = button.action()
 
         if game_counter > 0:
             bot_directions = calculate_bot_directions(map, bots, bot_positions, bot_ids, bot_food)
             move_bots(map, bot_ids, bot_positions, bot_directions, bot_food)
 
             screen.fill(BLACK)
+
             draw_title(screen)
+            draw_speed_buttons(screen, speed_buttons)
             draw_grid_map(screen, map)
             draw_scoreboard(screen, bot_food, bot_names)
             draw_moves_left(screen, game_counter)
@@ -129,7 +147,7 @@ def main():
         
         game_counter -= 1
         pygame.display.flip()
-        clock.tick(1)
+        clock.tick(game_tick)
 
 if __name__ == "__main__":
     main()
