@@ -18,8 +18,8 @@ class Bot(ABC):
         self.id = id            # Bot ID
         self.x = start_x        # Bot x coordinate
         self.y = start_y        # Bot y coordinate
-        self.food = 1           # Bot food count
         self.minimap = minimap  # Bot minimap
+        self.bot_food = {}
 
         # Initally bot doesnt know the map, so think that entire map is unknown
         self.map = [[UNKNOWN_CELL for _ in range(map_breadth)] for _ in range(map_length)]
@@ -37,19 +37,28 @@ class Bot(ABC):
                 if 0 <= map_x < len(self.map) and 0 <= map_y < len(self.map[0]):
                     self.map[map_x][map_y] = self.minimap[i][j]
 
-    def update_state(self, current_x: int, current_y: int, minimap: list):
+    def update_state(self, current_x: int, current_y: int, minimap: list, bot_food: dict):
+        """
+        Update all the new information received in this turn
+        :param current_x: Current x coordinate of the bot
+        :param current_y: Current y coordinate of the bot
+        :param minimap: 5x5 minimap of the bot
+        :param bot_food: Dictionary containing { bot_id -> food count } mapping
+        """
         self.x = current_x
         self.y = current_y
         self.minimap = minimap
+        self.bot_food = bot_food
         self.update_map_from_minimap()
 
     @abstractmethod
-    def move(self, current_x: int, current_y: int, minimap: list) -> int:
+    def move(self, current_x: int, current_y: int, minimap: list, bot_food: dict) -> int:
         """
         Move the bot based on the current minimap
         :param current_x: Current x coordinate of the bot
         :param current_y: Current y coordinate of the bot
         :param minimap: 5x5 minimap of the bot
+        :param bot_food: Dictionary containing { bot_id -> food count } mapping
         :return: direction to move (MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, MOVE_HALT)
         """
         raise NotImplementedError("You need to implement the move method in your bot class")

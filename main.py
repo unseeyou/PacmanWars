@@ -18,6 +18,18 @@ def draw_title(screen: pygame.Surface):
     text = font.render("PACMAN WARS", True, WHITE)
     screen.blit(text, (WIDTH // 2 - text.get_width() // 2, 20))
 
+def draw_game_over(screen: pygame.Surface, winner_bot_name: str):
+    """
+    Draw the game over on the screen
+    :param screen: UI screen
+    :param winner_bot_name: Name of the winner bot
+    """
+    font = pygame.font.SysFont('Arial', 50, bold=True)  # Use Arial font with size 30 and bold
+    text = font.render("GAME OVER", True, WHITE)
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2 + 100, HEIGHT // 2))
+    text = font.render(f"WINNER IS {winner_bot_name}", True, WHITE)
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2 + 100, HEIGHT // 2 + 100))
+
 # Draw the game snapshot on the screen
 # (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
 def draw_grid_map(screen: pygame.Surface, map: list):
@@ -80,19 +92,31 @@ def main():
     bot_ids = {id: BOT_ALIVE for id in range(1, number_of_bots + 1)} # Initialize the bot ids with BOT_ALIVE status
 
     is_game_running = True  # Game loop
+    game_counter = 10 # Maximum game moves
     while is_game_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_game_running = False
-        
-        bot_directions = calculate_bot_directions(map, bots, bot_positions, bot_ids)
-        move_bots(map, bot_ids, bot_positions, bot_directions, bot_food)
 
-        screen.fill(BLACK)
-        draw_title(screen)
-        draw_grid_map(screen, map)
-        draw_scoreboard(screen, bot_food, bot_names)
-        generate_food(map, number_of_bots)
+        if game_counter > 0:
+            bot_directions = calculate_bot_directions(map, bots, bot_positions, bot_ids, bot_food)
+            move_bots(map, bot_ids, bot_positions, bot_directions, bot_food)
+
+            screen.fill(BLACK)
+            draw_title(screen)
+            draw_grid_map(screen, map)
+            draw_scoreboard(screen, bot_food, bot_names)
+            generate_food(map, number_of_bots)
+        
+        else:
+            winner = 1
+            for id in bot_food.keys():
+                if bot_food[id] > bot_food[winner]:
+                    winner = id
+            screen.fill(BLACK)
+            draw_game_over(screen, bot_names[id])
+        
+        game_counter -= 1
         pygame.display.flip()
         clock.tick(1)
 

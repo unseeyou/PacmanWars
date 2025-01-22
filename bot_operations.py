@@ -59,13 +59,14 @@ def generate_bot_positions(map: list, num_of_bots: int) -> dict:
 
 # Execute bot code to find the next move
 # (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
-def calculate_bot_directions(map: list, bots: Dict[int, Bot], bot_positions: dict, bot_ids: dict) -> dict:
+def calculate_bot_directions(map: list, bots: Dict[int, Bot], bot_positions: dict, bot_ids: dict, bot_food: dict) -> dict:
     """
     Calculate the next move for each bot
     :param map: 2D list representing the game map
     :param bots: Dictionary containing bot objects
     :param bot_positions: Dictionary containing bot positions
     :param bot_ids: Dictionary containing bot ids
+    :param bot_food: Dictionary containing { bot_id -> food count } mapping
     """
     bot_directions = {}
     for id, bot in bots.items():
@@ -73,7 +74,8 @@ def calculate_bot_directions(map: list, bots: Dict[int, Bot], bot_positions: dic
             bot_directions[id] = bot.move(
                 current_x=bot_positions[id][0],
                 current_y=bot_positions[id][1],
-                minimap=get_minimap(map, bot_positions[id][0], bot_positions[id][1]))
+                minimap=get_minimap(map, bot_positions[id][0], bot_positions[id][1]),
+                bot_food=bot_food)
     return bot_directions
 
 # Calculate final bot positions based on the directions bots are moving
