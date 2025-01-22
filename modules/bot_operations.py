@@ -71,11 +71,14 @@ def calculate_bot_directions(map: list, bots: Dict[int, Bot], bot_positions: dic
     bot_directions = {}
     for id, bot in bots.items():
         if bot_ids[id] == BOT_ALIVE:
-            bot_directions[id] = bot.move(
-                current_x=bot_positions[id][0],
-                current_y=bot_positions[id][1],
-                minimap=get_minimap(map, bot_positions[id][0], bot_positions[id][1]),
-                bot_food=bot_food)
+            try:
+                bot_directions[id] = bot.move(
+                    current_x=bot_positions[id][0],
+                    current_y=bot_positions[id][1],
+                    minimap=get_minimap(map, bot_positions[id][0], bot_positions[id][1]),
+                    bot_food=bot_food)
+            except Exception:
+                bot_directions[id] = MOVE_HALT
     return bot_directions
 
 # Calculate final bot positions based on the directions bots are moving

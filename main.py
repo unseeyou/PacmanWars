@@ -74,7 +74,7 @@ def draw_game_screen(screen: pygame.Surface, speed_buttons: list, map: list, mov
     
     for bot_id, food in sorted_bots:
         bot_name = bot_names[bot_id]
-        text = f"{bot_name}: {food}"
+        text = f"{bot_id}. {bot_name}: {food}"
         screen.blit(font.render(text, True, WHITE), (x_offset, y_offset))
         y_offset += 30
 
