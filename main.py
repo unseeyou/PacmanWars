@@ -3,51 +3,38 @@ from constants import *
 from modules.map_generator import generate_map
 from modules.food_generator import generate_food
 from modules.bot_operations import *
-from modules.speed_buttons import get_buttons
+from modules.speed_buttons import get_speed_buttons
 
 # Initialize the game using pygame UI
 pygame.init()
 screen = pygame.display.set_mode((WIDTH + 200, HEIGHT + 100))
 pygame.display.set_caption("PACMAN WARS")
 
-game_tick = 1
-
-def draw_title(screen: pygame.Surface):
+# Draws the entire game screen snapshot on the application
+# (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
+def draw_game_screen(screen: pygame.Surface, speed_buttons: list, map: list, moves_left: int, bot_food: dict, bot_names: dict):
     """
-    Draw the title on the screen
+    Draws game screen on the application
     :param screen: UI screen
+    :param speed_buttons: List of speed buttons to alter game speed
+    :param map: 2D list representing the game map
+    :param moves_left: number of moves left to play in the game
+    :param bot_food: Dictionary containing the food count of the bots
+    :param bot_names: Dictionary containing the names of the bots
     """
+    # Draw game title
     font = pygame.font.SysFont('Arial', 45, bold=True)  # Use Arial font with size 30 and bold
     text = font.render("PACMAN WARS", True, WHITE)
     screen.blit(text, (WIDTH // 2 - text.get_width() // 2, 20))
 
-def draw_speed_buttons(screen, speed_buttons):
-    font = pygame.font.SysFont('Arial', 20, bold=False) 
+    # Draw speed buttons
+    font = pygame.font.SysFont('Arial', 15, bold=False) 
     text = font.render(f"Change game speed", True, WHITE)
     screen.blit(text, (WIDTH + 10, HEIGHT - 80))
     for button in speed_buttons:
         button.draw(screen, font)
 
-def draw_game_over(screen: pygame.Surface, winner_bot_name: str):
-    """
-    Draw the game over on the screen
-    :param screen: UI screen
-    :param winner_bot_name: Name of the winner bot
-    """
-    font = pygame.font.SysFont('Arial', 50, bold=True)  # Use Arial font with size 30 and bold
-    text = font.render("GAME OVER", True, WHITE)
-    screen.blit(text, (WIDTH // 2 - text.get_width() // 2 + 100, HEIGHT // 2))
-    text = font.render(f"WINNER IS {winner_bot_name}", True, WHITE)
-    screen.blit(text, (WIDTH // 2 - text.get_width() // 2 + 100, HEIGHT // 2 + 100))
-
-# Draw the game snapshot on the screen
-# (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
-def draw_grid_map(screen: pygame.Surface, map: list):
-    """
-    Draw the grid map on the screen
-    :param screen: UI screen
-    :param map: 2D list representing the game map
-    """
+    # Draw grid map
     font = pygame.font.SysFont(None, 18)
     for i, row in enumerate(map):
         for j, cell in enumerate(row):
@@ -65,23 +52,12 @@ def draw_grid_map(screen: pygame.Surface, map: list):
                 text = font.render(cell, True, BLACK)
                 screen.blit(text, (j * CELL_SIZE + CELL_SIZE // 3, i * CELL_SIZE + 100 + CELL_SIZE // 4))
 
-def draw_moves_left(screen: pygame.Surface, moves_left: int):
-    """
-    Draw the number of moves left on the screen
-    :param screen: UI screen
-    :param moves_left: Number of moves left for game to end
-    """
+    # Draw moves left
     font = pygame.font.SysFont('Arial', 25, bold=True)  # Use Arial font with size 30 and bold
     text = font.render(f"Moves left : {moves_left}", True, WHITE)
     screen.blit(text, (WIDTH + 20, 20))
 
-def draw_scoreboard(screen: pygame.Surface, bot_food: dict, bot_names: dict):
-    """
-    Draw the scoreboard on the screen
-    :param screen: UI screen
-    :param bot_food: Dictionary containing the food count of the bots
-    :param bot_names: Dictionary containing the names of the bots
-    """
+    # Draw score board
     font = pygame.font.SysFont('Arial', 20, bold=False)  # Use Arial font with size 20 and not bold
     sorted_bots = sorted(bot_food.items(), key=lambda item: item[1], reverse=True)
     
@@ -102,16 +78,33 @@ def draw_scoreboard(screen: pygame.Surface, bot_food: dict, bot_names: dict):
         screen.blit(font.render(text, True, WHITE), (x_offset, y_offset))
         y_offset += 30
 
+# Draws game over screen with the winner name
+# (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
+def draw_game_over_screen(screen: pygame.Surface, winner_bot_name: str):
+    """
+    Draw the game over on the screen
+    :param screen: UI screen
+    :param winner_bot_name: Name of the winner bot
+    """
+    font = pygame.font.SysFont('Arial', 50, bold=True)  # Use Arial font with size 30 and bold
+    text = font.render("GAME OVER", True, WHITE)
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2 + 100, HEIGHT // 2))
+    text = font.render(f"WINNER IS {winner_bot_name}", True, WHITE)
+    screen.blit(text, (WIDTH // 2 - text.get_width() // 2 + 100, HEIGHT // 2 + 100))
+
+# Main loop of the game
+# (DO NOT CHANGE THIS, YOUR CHANGES WILL BE IGNORED IN THE COMPETITION)
 def main():
-    clock = pygame.time.Clock()
-    global game_tick
+    clock = pygame.time.Clock()     # Game clock
     map = generate_map(0.6, 0.6, 200)   # Generate the game map
     number_of_bots = get_number_of_bots()   # Get the number of bots
     bot_positions = generate_bot_positions(map, number_of_bots)  # Generate the bot positions
     bots, bot_names = load_bots(bot_positions, map) # Generate bot objects with names
     bot_food = {id: 1 for id in bot_positions.keys()}  # Initialize the food count for each bot
     bot_ids = {id: BOT_ALIVE for id in range(1, number_of_bots + 1)} # Initialize the bot ids with BOT_ALIVE status
-    speed_buttons = get_buttons()
+    speed_buttons = get_speed_buttons()     # Generate speed buttons to alter game speed
+    num_of_alive_bots = number_of_bots      # Number of bots still alive
+    game_tick = 1   # Game speed
 
     is_game_running = True  # Game loop
     game_counter = 1000 # Maximum game moves
@@ -124,26 +117,23 @@ def main():
                     if button.is_clicked(event.pos):
                         game_tick = button.action()
 
-        if game_counter > 0:
+        if game_counter > 0 or num_of_alive_bots == 1:
             bot_directions = calculate_bot_directions(map, bots, bot_positions, bot_ids, bot_food)
             move_bots(map, bot_ids, bot_positions, bot_directions, bot_food)
+            num_of_alive_bots = sum(1 for i in bot_ids.values() if i == BOT_ALIVE)
 
             screen.fill(BLACK)
-
-            draw_title(screen)
-            draw_speed_buttons(screen, speed_buttons)
-            draw_grid_map(screen, map)
-            draw_scoreboard(screen, bot_food, bot_names)
-            draw_moves_left(screen, game_counter)
+            draw_game_screen(screen, speed_buttons, map, game_counter, bot_food, bot_names)
             generate_food(map, number_of_bots)
         
         else:
+            # Find winner of the game (Bot with maximum food)
             winner = 1
             for id in bot_food.keys():
                 if bot_food[id] > bot_food[winner]:
                     winner = id
             screen.fill(BLACK)
-            draw_game_over(screen, bot_names[id])
+            draw_game_over_screen(screen, bot_names[winner])
         
         game_counter -= 1
         pygame.display.flip()
