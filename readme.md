@@ -67,13 +67,13 @@ class CustomBot(Bot):
 
 ## Project Structure
 
-- [main.py](http://_vscodecontentref_/1): The main entry point for the game.
-- [constants.py](http://_vscodecontentref_/2): Contains game constants and configurations.
-- [map_generator.py](http://_vscodecontentref_/3): Generates the game map.
-- [food_generator.py](http://_vscodecontentref_/4): Generates food on the map.
-- [bot_operations.py](http://_vscodecontentref_/5): Contains functions for bot movements and interactions.
-- [bots](http://_vscodecontentref_/6): Directory containing bot implementations.
-- [readme.md](http://_vscodecontentref_/7): This file.
+- [main.py](https://github.com/xzaviourr/PacmanWars/blob/master/main.py): The main entry point for the game.
+- [constants.py](https://github.com/xzaviourr/PacmanWars/blob/master/constants.py): Contains game constants and configurations.
+- [map_generator.py](https://github.com/xzaviourr/PacmanWars/blob/master/modules/map_generator.py): Generates the game map.
+- [food_generator.py](https://github.com/xzaviourr/PacmanWars/blob/master/modules/food_generator.py): Generates food on the map.
+- [bot_operations.py](https://github.com/xzaviourr/PacmanWars/blob/master/modules/bot_operations.py): Contains functions for bot movements and interactions.
+- [bots](https://github.com/xzaviourr/PacmanWars/tree/master/bots): Directory containing bot implementations.
+- [readme.md](https://github.com/xzaviourr/PacmanWars/blob/master/readme.md): This file.
 
 ## How to play the game
 This is a last man standing game. **Your bot needs to kill all the other bots to win the game**. To kill any other bot, your bot needs to cross that bot or be in the same cell as the other bot. When two or more bots are in the same cell, bot with the maximum amount of food wins the battle and collect food from all the dead bots.
