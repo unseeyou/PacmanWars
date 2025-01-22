@@ -55,6 +55,16 @@ def draw_grid_map(screen: pygame.Surface, map: list):
                 text = font.render(cell, True, BLACK)
                 screen.blit(text, (j * CELL_SIZE + CELL_SIZE // 3, i * CELL_SIZE + 100 + CELL_SIZE // 4))
 
+def draw_moves_left(screen: pygame.Surface, moves_left: int):
+    """
+    Draw the number of moves left on the screen
+    :param screen: UI screen
+    :param moves_left: Number of moves left for game to end
+    """
+    font = pygame.font.SysFont('Arial', 25, bold=True)  # Use Arial font with size 30 and bold
+    text = font.render(f"Moves left : {moves_left}", True, WHITE)
+    screen.blit(text, (WIDTH + 20, 20))
+
 def draw_scoreboard(screen: pygame.Surface, bot_food: dict, bot_names: dict):
     """
     Draw the scoreboard on the screen
@@ -66,7 +76,7 @@ def draw_scoreboard(screen: pygame.Surface, bot_food: dict, bot_names: dict):
     sorted_bots = sorted(bot_food.items(), key=lambda item: item[1], reverse=True)
     
     x_offset = WIDTH + 20
-    y_offset = 20
+    y_offset = 120
     scoreboard_width = 180
     scoreboard_height = 40 + len(sorted_bots) * 30
 
@@ -92,7 +102,7 @@ def main():
     bot_ids = {id: BOT_ALIVE for id in range(1, number_of_bots + 1)} # Initialize the bot ids with BOT_ALIVE status
 
     is_game_running = True  # Game loop
-    game_counter = 10 # Maximum game moves
+    game_counter = 1000 # Maximum game moves
     while is_game_running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -106,6 +116,7 @@ def main():
             draw_title(screen)
             draw_grid_map(screen, map)
             draw_scoreboard(screen, bot_food, bot_names)
+            draw_moves_left(screen, game_counter)
             generate_food(map, number_of_bots)
         
         else:
