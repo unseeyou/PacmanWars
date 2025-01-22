@@ -1,9 +1,9 @@
 import pygame
 from constants import *
-from map_generator import generate_map
-from food_generator import generate_food
-from bot_operations import *
-from speed_buttons import get_buttons
+from modules.map_generator import generate_map
+from modules.food_generator import generate_food
+from modules.bot_operations import *
+from modules.speed_buttons import get_buttons
 
 # Initialize the game using pygame UI
 pygame.init()

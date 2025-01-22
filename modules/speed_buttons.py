@@ -1,8 +1,13 @@
 import pygame
 from constants import *
 
+# Pygame button creator
 class Button:
     def __init__(self, x, y, width, height, color, text, action):
+        """
+        Creates a button with given specifications
+        :param x: x coordinate of the button
+        """
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
         self.text = text
