@@ -78,7 +78,7 @@ class CustomBot(Bot):
 ## How to play the game
 This is a last man standing game. **Your bot needs to kill all the other bots to win the game**. To kill any other bot, your bot needs to cross that bot or be in the same cell as the other bot. When two or more bots are in the same cell, bot with the maximum amount of food wins the battle and collect food from all the dead bots.
 
-Food will keep on spawning across the map. In each turn bot can move in either of the 4 directions or does not move at all. Bots can collect food from the food cells (Blue colored). Bots cannot move in the red (MOUNTAIN_CELL) and black (OUT_OF_BOUNDS_CELL) cells. After each turn, bot will be provided with a **5x5 minimap** based on which the bot needs to decide its next move. 
+Food will keep on spawning across the map. In each turn bot can move in either of the 4 directions or does not move at all. Bots can collect food from the food cells (Blue colored). Bots cannot move in the red (MOUNTAIN_CELL) and black (OUT_OF_BOUNDS_CELL) cells. After each turn, bot will be provided with a **5x5 minimap** based on which the bot needs to decide its next move. Total number of moves is 1000. After 1000 moves, player with most amount of food will be the winner.
 
 Types of cells -
 - WALKABLE CELL : Green colored, bot can move in this
